@@ -2,7 +2,7 @@ min-version: '1.4'
 class: ArcGISVector
 sources:
   topography:
-    url: https://emap.depi.vic.gov.au
+    url: https://emap.ffm.vic.gov.au
     folder: add_map_layers
     service: topography
 features:

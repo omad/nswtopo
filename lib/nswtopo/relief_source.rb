@@ -37,25 +37,30 @@ module NSWTopo
           raise BadLayerError.new("no dem data files at specified path") if paths.empty?
         end
       else
-        base_uri = URI.parse "http://www.ga.gov.au/gisimg/rest/services/topography/dem_s_1s/ImageServer/"
-        wgs84_bounds = map.projection.transform_bounds_to Projection.wgs84, bounds
-        base_query = { "f" => "json", "geometry" => wgs84_bounds.map(&:sort).transpose.flatten.join(?,) }
-        query = base_query.merge("returnIdsOnly" => true, "where" => "category = 1").to_query
-        raster_ids = ArcGIS.get_json(base_uri + "query?#{query}").fetch("objectIds")
-        query = base_query.merge("rasterIDs" => raster_ids.join(?,), "format" => "TIFF").to_query
-        tile_paths = ArcGIS.get_json(base_uri + "download?#{query}").fetch("rasterFiles").map do |file|
-          file["id"][/[^@]*/]
-        end.select do |url|
-          url[/\.tif$/]
-        end.map do |url|
-          [ URI.parse(URI.escape url), temp_dir + url[/[^\/]*$/] ]
-        end.each do |uri, tile_path|
-          HTTP.get(uri) do |response|
-            tile_path.open("wb") { |file| file << response.body }
-          end
-        end.map(&:last)
-      end.join(?\n).tap do |path_list|
-        File.write src_path, path_list
+        puts "Params:#{params} Map:#{map} Dims:#{dimensions} Res:#{resolution} tmpdir:#{temp_dir}"
+
+        params = {'host' => 'services.ga.gov.au', 'service' => 'DEM_SRTM_1Second', 'image' => false, 'instance' => 'site_9'}
+        agr = ArcGISRaster.new('dem', params)
+        agr.get_raster(map, dimensions, resolution, temp_dir)
+
+#        wgs84_bounds = map.projection.transform_bounds_to Projection.wgs84, bounds
+#        base_query = { "f" => "json", "geometry" => wgs84_bounds.map(&:sort).transpose.flatten.join(?,) }
+#        query = base_query.merge("returnIdsOnly" => true, "where" => "category = 1").to_query
+#        raster_ids = ArcGIS.get_json(base_uri + "query?#{query}").fetch("objectIds")
+#        query = base_query.merge("rasterIDs" => raster_ids.join(?,), "format" => "TIFF").to_query
+#        tile_paths = ArcGIS.get_json(base_uri + "download?#{query}").fetch("rasterFiles").map do |file|
+#          file["id"][/[^@]*/]
+#        end.select do |url|
+#          url[/\.tif$/]
+#        end.map do |url|
+#          [ URI.parse(URI.escape url), temp_dir + url[/[^\/]*$/] ]
+#        end.each do |uri, tile_path|
+#          HTTP.get(uri) do |response|
+#            tile_path.open("wb") { |file| file << response.body }
+#          end
+      #  end.map(&:last)
+#      end.join(?\n).tap do |path_list|
+#        File.write src_path, path_list
       end
       %x[gdalbuildvrt -input_file_list "#{src_path}" "#{vrt_path}"]
       

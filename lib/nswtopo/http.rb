@@ -3,6 +3,7 @@ module NSWTopo
     def self.request(uri, req)
       intervals = [ 1, 2, 2, 4, 4, 8, 8 ]
       begin
+        puts "Connecting to #{uri}"
         use_ssl = uri.scheme == "https"
         response = Net::HTTP.start(uri.host, uri.port, :use_ssl => use_ssl, :read_timeout => 600) do |http|
           http.request(req)

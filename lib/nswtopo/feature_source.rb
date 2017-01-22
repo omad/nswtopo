@@ -65,6 +65,7 @@ module NSWTopo
         geometry = { "rings" => [ ring ] }.to_json
       end
       geometry_query = { "geometry" => geometry, "geometryType" => "esriGeometryPolygon" }
+      puts "OptionsID = #{options['id']}"
       options["id"] ||= service["layers"].find do |layer|
         layer["name"] == options["name"]
       end.fetch("id")
@@ -229,6 +230,7 @@ module NSWTopo
       
       query = base_query.merge("request" => "GetCapabilities").to_query
       xml = WFS.get_xml URI.parse("#{url}?#{query}"), headers
+      puts "Finding CRS: #{namespace}:#{type_name}"
       default_crs = xml.elements["wfs:WFS_Capabilities/FeatureTypeList/FeatureType[Name[text()='#{namespace}:#{type_name}']]/DefaultCRS"].text
       wkid = default_crs.match(/EPSG::(\d+)$/)[1]
       projection = Projection.new "epsg:#{wkid}"

@@ -3,20 +3,23 @@ class: FeatureSource
 sources:
   topography:
     protocol: arcgis
-    url: https://emap.depi.vic.gov.au
+    url: https://emap.ffm.vic.gov.au
     folder: add_map_layers
     service: topography
   mapscape:
     protocol: arcgis
-    url: https://emap.depi.vic.gov.au
+    url: https://emap.ffm.vic.gov.au
     service: mapscape
   wfs:
     protocol: wfs
     # url: http://services.land.vic.gov.au/geoserver_pWMS/wfs
     url: http://services.land.vic.gov.au/catalogue/publicproxy/guest/sdm_geoserver/wfs
+  wfs2:
+    protocol: wfs
+    url: http://services.land.vic.gov.au/catalogue/publicproxy/guest/dv_geoserver/wfs
   land-class-use:
     protocol: arcgis
-    url: https://emap.depi.vic.gov.au
+    url: https://emap.ffm.vic.gov.au
     service: land_class_use_culture
 features:
   plantations:
@@ -32,17 +35,17 @@ features:
     label-only: true
     label: ALTITUDE
     filter: FEATURE_TYPE_CODE IN ('contour_index','contour_dep_index')
-  excavation:
-    source: wfs
-    name: VMFEAT.FOI_POLYGON
-    filter: FEATURE_TYPE IN ('excavation site')
-    category: FEATURE_SUBTYPE
+#  excavation:
+#    source: wfs
+#    name: VMFEAT.FOI_POLYGON
+#    filter: FEATURE_TYPE IN ('excavation site')
+#    category: FEATURE_SUBTYPE
   cadastre:
     source: mapscape
     name: Property
   road-tunnels:
     source: topography
-    name: Roads (50K)
+    name: Roads (50K-100K)
     where:
     - X_CLASS NOT IN ('Proposed')
     - FEATURE_TYPE_CODE IN ('tunnel')
@@ -66,7 +69,7 @@ features:
     category: FEATURE_TYPE_CODE
   watercourses:
     source: topography
-    name: Watercourse (50K)
+    name: Watercourse (50K-250K)
     category:
     - HIERARCHY
     - FEATURE_TYPE_CODE
@@ -97,28 +100,28 @@ features:
         "2": Perennial
         ~: Perennial
   coastline:
-    source: wfs
-    name: VMSHARED.FR_FRAMEWORK_AREA_LINE
+    source: wfs2
+    name: VMINDEX_FR_FRAMEWORK_AREA_LINE
     filter: FEATURE_TYPE_CODE = 'coast'
   ferry-routes:
     source: wfs
     name: VMTRANS.TR_ROAD
     filter: FEATURE_TYPE_CODE IN ('ferry_route')
-  recreational-perimeters:
-    source: wfs
-    name: VMFEAT.FOI_POLYGON
-    filter: FEATURE_TYPE IN ('sport facility')
-    category: FEATURE_SUBTYPE
+#  recreational-perimeters:
+#    source: wfs
+#    name: VMFEAT.FOI_POLYGON
+#    filter: FEATURE_TYPE IN ('sport facility')
+#    category: FEATURE_SUBTYPE
   fords:
     source: topography
-    name: Roads (50K)
+    name: Roads (50K-100K)
     where:
     - X_CLASS NOT IN ('Proposed')
     - FEATURE_TYPE_CODE IN ('ford')
     category: X_CLASS
   roads:
   - source: topography
-    name: Roads (50K)
+    name: Roads (50K-100K)
     where:
     - X_CLASS NOT IN ('Proposed')
     - FEATURE_TYPE_CODE NOT IN ('connector','tunnel','ferry_route')
@@ -126,7 +129,7 @@ features:
     - X_CLASS
     - X_SEALED
   - source: topography
-    name: Roads (50K)
+    name: Roads (50K-100K)
     where:
     - X_CLASS IN ('Freeway','Highway','Arterial','Sub-Arterial','Collector','2wd','4wd','Walking Track','Bicycle Track')
     - FEATURE_TYPE_CODE NOT IN ('connector','ferry_route')
@@ -150,7 +153,7 @@ features:
         "5": Narrow
   road-bridges:
     source: topography
-    name: Roads (50K)
+    name: Roads (50K-100K)
     where:
     - X_CLASS NOT IN ('Proposed')
     - FEATURE_TYPE_CODE IN ('bridge','foot_bridge')
@@ -188,8 +191,8 @@ features:
     name: Transmission Lines
     where: FEATURE_TYPE IN ('power line')
   state-border:
-    source: wfs
-    name: VMSHARED.FR_FRAMEWORK_AREA_LINE
+    source: wfs2
+    name: VMINDEX_FR_FRAMEWORK_AREA_LINE
     filter: FEATURE_TYPE_CODE = 'state_border'
   place-names:
     source: mapscape
@@ -620,7 +623,7 @@ labels:
 # TODO: huts, snow poles & mine symbols from from mapscape/Local Features
 # TODO: water area names
 
-# https://emap.depi.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 FEATURE_TYPE_CODE
+# https://emap.ffm.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 FEATURE_TYPE_CODE
 # connector_structure
 # watercourse_channel
 # watercourse_channel_drain
@@ -628,23 +631,23 @@ labels:
 # watercourse_river
 # watercourse_stream
 
-# https://emap.depi.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 HIERARCHY
+# https://emap.ffm.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 HIERARCHY
 # <Null>
 # H
 # L
 # M
 
-# https://emap.depi.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 ORIGIN_DESC
+# https://emap.ffm.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 ORIGIN_DESC
 # <Null>
 # man-made
 # natural
 
-# https://emap.depi.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 CONST_DESC
+# https://emap.ffm.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 CONST_DESC
 # <Null>
 # channel
 # drain
 
-# https://emap.depi.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 USAGE_DESC
+# https://emap.ffm.vic.gov.au/arcgis/rest/services/add_map_layers/topography/MapServer/26 USAGE_DESC
 # <Null>
 # drainage
 # irrigation
@@ -663,7 +666,7 @@ labels:
 # watercourse_river
 # watercourse_stream
 
-# https://emap.depi.vic.gov.au/arcgis/rest/services/mapscape/MapServer/23 FEATURE_TYPE FEATURE_SUBTYPE
+# https://emap.ffm.vic.gov.au/arcgis/rest/services/mapscape/MapServer/23 FEATURE_TYPE FEATURE_SUBTYPE
 # cableway
 #   chairlift
 #   poma tow
@@ -679,7 +682,7 @@ labels:
 # recreational resource
 #   boat ramp
 
-# https://emap.depi.vic.gov.au/arcgis/rest/services/mapscape/MapServer/19 FEATURE_TYPE FEATURE_SUBTYPE (points)
+# https://emap.ffm.vic.gov.au/arcgis/rest/services/mapscape/MapServer/19 FEATURE_TYPE FEATURE_SUBTYPE (points)
 # admin facility
 #   custodial service
 #   customer service centre
